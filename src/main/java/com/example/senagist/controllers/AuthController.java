@@ -40,7 +40,7 @@ public class AuthController {
             User user = userService.getByEmail(userLogin.getEmail());
             String jwt = jwtTokenUtil.generateToken(user.getEmail());
 
-            return ResponseEntity.ok(new JwtResponse(jwt, user.getId(), user.getEmail()));
+            return ResponseEntity.ok(new JwtResponse(jwt, user.getId(), user.getEmail(), user.getRole()));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Invalid email or password"));

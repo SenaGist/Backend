@@ -34,7 +34,6 @@ public class Maintenance {
     @Column(name = "image_2", columnDefinition = "LONGBLOB")
     private byte[] image_2;
 
-    private String status;
     private LocalDateTime created_at;
 
     public Maintenance() {
@@ -42,7 +41,7 @@ public class Maintenance {
 
     public Maintenance(Asset asset, User user, LocalDateTime start_date, LocalDateTime end_date,
                        String type, String description, String spare_parts,
-                       String remarks, byte[] image_1, byte[] image_2, String status) {
+                       String remarks, byte[] image_1, byte[] image_2) {
         this.asset = asset;
         this.user = user;
         this.start_date = start_date;
@@ -53,7 +52,6 @@ public class Maintenance {
         this.remarks = remarks;
         this.image_1 = image_1;
         this.image_2 = image_2;
-        this.status = status;
     }
 
     public Long getId() {
@@ -142,14 +140,6 @@ public class Maintenance {
 
     public void setImage_2(byte[] image_2) {
         this.image_2 = image_2;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public LocalDateTime getCreated_at() {

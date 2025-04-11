@@ -55,7 +55,6 @@ public class MaintenanceService {
         maintenance.setType(maintenanceNew.getType());
         maintenance.setSpare_parts(maintenanceNew.getSpare_parts());
         maintenance.setRemarks(maintenanceNew.getRemarks());
-        maintenance.setStatus(maintenanceNew.getStatus());
         maintenance.setImage_1(maintenanceNew.getImage_1());
         maintenance.setImage_2(maintenanceNew.getImage_2());
 
@@ -69,7 +68,6 @@ public class MaintenanceService {
                 .map(maintenance -> {
                     maintenance.setAsset(asset);
                     maintenance.setEnd_date(maintenanceDTO.getEnd_date());
-                    maintenance.setStatus(maintenanceDTO.getStatus());
                     maintenance.setImage_1(maintenanceDTO.getImage_1());
                     maintenance.setImage_2(maintenanceDTO.getImage_2());
                     return maintenanceRepository.save(maintenance);

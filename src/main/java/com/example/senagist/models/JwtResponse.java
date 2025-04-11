@@ -7,11 +7,13 @@ public class JwtResponse implements Serializable {
     private String type = "Bearer ";
     private Long id;
     private String email;
+    private String role;
 
-    public JwtResponse(String token, Long id, String email) {
+    public JwtResponse(String token, Long id, String email, String role) {
         this.token = token;
         this.id = id;
         this.email = email;
+        this.role = role;
     }
 
     public String getToken() {
@@ -44,5 +46,13 @@ public class JwtResponse implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

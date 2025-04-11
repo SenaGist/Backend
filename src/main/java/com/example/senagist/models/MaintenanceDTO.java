@@ -14,13 +14,12 @@ public class MaintenanceDTO {
     private String remarks;
     private byte[] image_1;
     private byte[] image_2;
-    private String status;
 
     public MaintenanceDTO(){}
 
     public MaintenanceDTO(Long id_asset, Long id_user, LocalDateTime start_date,
                           String type, String description, String spare_parts,
-                          String remarks, byte[] image_1, byte[] image_2, String status) {
+                          String remarks, byte[] image_1, byte[] image_2) {
         this.id_asset = id_asset;
         this.id_user = id_user;
         this.start_date = start_date;
@@ -30,7 +29,6 @@ public class MaintenanceDTO {
         this.remarks = remarks;
         this.image_1 = image_1;
         this.image_2 = image_2;
-        this.status = status;
     }
 
     public Long getId() {
@@ -121,12 +119,5 @@ public class MaintenanceDTO {
         this.image_2 = image_2;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }
 
