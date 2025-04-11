@@ -1,10 +1,13 @@
 package com.example.senagist.models;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class MaintenanceDTO {
     private Long id;
-    private Long id_asset;
+    private Asset asset; // Para propiedades básicas del asset
+    private String assetType; // "refrigeration", "lighting", o "general"
+    private Map<String, Object> assetDetails; // Para propiedades específicas según el tipo
     private Long id_user;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
@@ -17,12 +20,15 @@ public class MaintenanceDTO {
 
     public MaintenanceDTO(){}
 
-    public MaintenanceDTO(Long id_asset, Long id_user, LocalDateTime start_date,
-                          String type, String description, String spare_parts,
-                          String remarks, byte[] image_1, byte[] image_2) {
-        this.id_asset = id_asset;
+    public MaintenanceDTO(Asset asset, String assetType, Map<String, Object> assetDetails, Long id_user,
+                          LocalDateTime start_date, LocalDateTime end_date, String type, String description,
+                          String spare_parts, String remarks, byte[] image_1, byte[] image_2) {
+        this.asset = asset;
+        this.assetType = assetType;
+        this.assetDetails = assetDetails;
         this.id_user = id_user;
         this.start_date = start_date;
+        this.end_date = end_date;
         this.type = type;
         this.description = description;
         this.spare_parts = spare_parts;
@@ -39,12 +45,28 @@ public class MaintenanceDTO {
         this.id = id;
     }
 
-    public Long getId_asset() {
-        return id_asset;
+    public Asset getAsset() {
+        return asset;
     }
 
-    public void setId_asset(Long id_asset) {
-        this.id_asset = id_asset;
+    public void setAsset(Asset asset) {
+        this.asset = asset;
+    }
+
+    public String getAssetType() {
+        return assetType;
+    }
+
+    public void setAssetType(String assetType) {
+        this.assetType = assetType;
+    }
+
+    public Map<String, Object> getAssetDetails() {
+        return assetDetails;
+    }
+
+    public void setAssetDetails(Map<String, Object> assetDetails) {
+        this.assetDetails = assetDetails;
     }
 
     public Long getId_user() {
@@ -118,6 +140,4 @@ public class MaintenanceDTO {
     public void setImage_2(byte[] image_2) {
         this.image_2 = image_2;
     }
-
 }
-
