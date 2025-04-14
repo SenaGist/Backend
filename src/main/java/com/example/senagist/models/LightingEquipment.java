@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @PrimaryKeyJoinColumn(name = "id")
 public class LightingEquipment extends Asset{
     @ManyToOne
-    @JoinColumn(name = "id_center", nullable = false)
+    @JoinColumn(name = "id_center", nullable = true)
     private Center center;
 
     private String technology;

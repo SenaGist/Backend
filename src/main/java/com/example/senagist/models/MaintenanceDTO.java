@@ -1,13 +1,15 @@
 package com.example.senagist.models;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
 public class MaintenanceDTO {
     private Long id;
-    private Asset asset; // Para propiedades básicas del asset
-    private String assetType; // "refrigeration", "lighting", o "general"
-    private Map<String, Object> assetDetails; // Para propiedades específicas según el tipo
+    private Asset asset;
+    private String assetType;
+    private Map<String, Object> assetDetails;
     private Long id_user;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
@@ -15,6 +17,8 @@ public class MaintenanceDTO {
     private String description;
     private String spare_parts;
     private String remarks;
+    private MultipartFile image_1_file;
+    private MultipartFile image_2_file;
     private byte[] image_1;
     private byte[] image_2;
 
@@ -139,5 +143,21 @@ public class MaintenanceDTO {
 
     public void setImage_2(byte[] image_2) {
         this.image_2 = image_2;
+    }
+
+    public MultipartFile getImage_1_file() {
+        return image_1_file;
+    }
+
+    public void setImage_1_file(MultipartFile image_1_file) {
+        this.image_1_file = image_1_file;
+    }
+
+    public MultipartFile getImage_2_file() {
+        return image_2_file;
+    }
+
+    public void setImage_2_file(MultipartFile image_2_file) {
+        this.image_2_file = image_2_file;
     }
 }
