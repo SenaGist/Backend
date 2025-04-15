@@ -3,11 +3,17 @@ package com.example.senagist.controllers;
 import com.example.senagist.models.Maintenance;
 import com.example.senagist.models.MaintenanceDTO;
 import com.example.senagist.services.MaintenanceService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,6 +23,7 @@ import java.util.Map;
 @RequestMapping("/maintenances")
 public class MaintenanceController {
 
+    private static final Log log = LogFactory.getLog(MaintenanceController.class);
     @Autowired
     private MaintenanceService maintenanceService;
 
@@ -38,23 +45,26 @@ public class MaintenanceController {
         List<Maintenance> maintenances = maintenanceService.getByAsset(id);
         return ResponseEntity.ok(maintenances);
     }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> create(@ModelAttribute MaintenanceDTO maintenanceDTO) {
+    public ResponseEntity<Maintenance> createMaintenance(
+            @RequestPart("maintenanceDTO") String jsonData,
+            @RequestPart(value = "image_1", required = false) MultipartFile image1,
+            @RequestPart(value = "image_2", required = false) MultipartFile image2
+    ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
         try {
-            // Convertir MultipartFile a byte[]
-            if (maintenanceDTO.getImage_1_file() != null && !maintenanceDTO.getImage_1_file().isEmpty()) {
-                maintenanceDTO.setImage_1(maintenanceDTO.getImage_1_file().getBytes());
-            }
+            MaintenanceDTO maintenanceDTO = objectMapper.readValue(jsonData, MaintenanceDTO.class);
+            maintenanceDTO.setImage_1(image1.getBytes());
+            maintenanceDTO.setImage_2(image2.getBytes());
 
-            if (maintenanceDTO.getImage_2_file() != null && !maintenanceDTO.getImage_2_file().isEmpty()) {
-                maintenanceDTO.setImage_2(maintenanceDTO.getImage_2_file().getBytes());
-            }
-
-            maintenanceService.create(maintenanceDTO);
-            return ResponseEntity.ok(Map.of("message", "Maintenance Created"));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to process image files: " + e.getMessage()));
+            Maintenance maintenance = maintenanceService.create(maintenanceDTO);
+            return ResponseEntity.ok(maintenance);
+        } catch (Exception e) {
+            log.error("Error al crear mantenimiento", e);
+            return ResponseEntity.badRequest().body(null);
         }
     }
 

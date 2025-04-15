@@ -3,6 +3,7 @@ package com.example.senagist.models;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Map;
 
 public class MaintenanceDTO {
@@ -159,5 +160,26 @@ public class MaintenanceDTO {
 
     public void setImage_2_file(MultipartFile image_2_file) {
         this.image_2_file = image_2_file;
+    }
+
+    @Override
+    public String toString() {
+        return "MaintenanceDTO{" +
+                "id=" + id +
+                ", asset=" + asset +
+                ", assetType='" + assetType + '\'' +
+                ", assetDetails=" + assetDetails +
+                ", id_user=" + id_user +
+                ", start_date=" + start_date +
+                ", end_date=" + end_date +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", spare_parts='" + spare_parts + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", image_1_file=" + image_1_file +
+                ", image_2_file=" + image_2_file +
+                ", image_1=" + Arrays.toString(image_1) +
+                ", image_2=" + Arrays.toString(image_2) +
+                '}';
     }
 }

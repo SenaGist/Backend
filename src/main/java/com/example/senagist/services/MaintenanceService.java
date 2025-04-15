@@ -43,7 +43,7 @@ public class MaintenanceService {
     @Transactional
     public Maintenance create(MaintenanceDTO maintenanceNew) {
         Maintenance maintenance = new Maintenance();
-
+        System.out.println(maintenanceNew);
         User user = userRepository.findById(maintenanceNew.getId_user())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
