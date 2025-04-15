@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
 
 public class MaintenanceDTO {
@@ -22,6 +23,8 @@ public class MaintenanceDTO {
     private MultipartFile image_2_file;
     private byte[] image_1;
     private byte[] image_2;
+    private String image1Base64;
+    private String image2Base64;
 
     public MaintenanceDTO(){}
 
@@ -162,6 +165,47 @@ public class MaintenanceDTO {
         this.image_2_file = image_2_file;
     }
 
+    public String getImage1Base64() {
+        return image1Base64;
+    }
+
+    public void setImage1Base64(String image1Base64) {
+        this.image1Base64 = image1Base64;
+    }
+
+    public String getImage2Base64() {
+        return image2Base64;
+    }
+
+    public void setImage2Base64(String image2Base64) {
+        this.image2Base64 = image2Base64;
+    }
+    public void convertBlobsToBase64() {
+        if (this.image_1 != null) {
+            this.image1Base64 = Base64.getEncoder().encodeToString(this.image_1);
+        }
+        if (this.image_2 != null) {
+            this.image2Base64 = Base64.getEncoder().encodeToString(this.image_2);
+        }
+    }
+    public static MaintenanceDTO fromEntity(Maintenance maintenance) {
+        MaintenanceDTO dto = new MaintenanceDTO();
+        dto.setId(maintenance.getId());
+        dto.setAsset(maintenance.getAsset());
+        dto.setId_user(maintenance.getUser().getId());
+        dto.setStart_date(maintenance.getStart_date());
+        dto.setEnd_date(maintenance.getEnd_date());
+        dto.setType(maintenance.getType());
+        dto.setDescription(maintenance.getDescription());
+        dto.setSpare_parts(maintenance.getSpare_parts());
+        dto.setRemarks(maintenance.getRemarks());
+        dto.setImage_1(maintenance.getImage_1());
+        dto.setImage_2(maintenance.getImage_2());
+
+        dto.convertBlobsToBase64();
+
+        return dto;
+    }
     @Override
     public String toString() {
         return "MaintenanceDTO{" +
@@ -181,5 +225,8 @@ public class MaintenanceDTO {
                 ", image_1=" + Arrays.toString(image_1) +
                 ", image_2=" + Arrays.toString(image_2) +
                 '}';
+    }
+
+    public static void convertBlobsToBase64(Maintenance maintenance) {
     }
 }
