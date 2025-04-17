@@ -29,6 +29,27 @@ public class MaintenanceController {
     @Autowired
     private MaintenanceService maintenanceService;
 
+    private MaintenanceDTO convertToDTO(Maintenance m) {
+        MaintenanceDTO dto = new MaintenanceDTO();
+        dto.setId(m.getId());
+        dto.setAsset(m.getAsset());
+        dto.setId_user(m.getUser().getId());
+        dto.setStart_date(m.getStart_date());
+        dto.setEnd_date(m.getEnd_date());
+        dto.setType(m.getType());
+        dto.setDescription(m.getDescription());
+        dto.setSpare_parts(m.getSpare_parts());
+        dto.setRemarks(m.getRemarks());
+
+        if (m.getImage_1() != null) {
+            dto.setImage1Base64("data:image/jpeg;base64," + Base64.getEncoder().encodeToString(m.getImage_1()));
+        }
+        if (m.getImage_2() != null) {
+            dto.setImage2Base64("data:image/jpeg;base64," + Base64.getEncoder().encodeToString(m.getImage_2()));
+        }
+
+        return dto;
+    }
 
     @GetMapping
     public ResponseEntity<?> getAll() {
@@ -40,27 +61,9 @@ public class MaintenanceController {
     public ResponseEntity<?> getByUserId(@PathVariable Long id) {
         List<Maintenance> maintenances = maintenanceService.getByUserId(id);
 
-        List<MaintenanceDTO> dtos = maintenances.stream().map(m -> {
-            MaintenanceDTO dto = new MaintenanceDTO();
-            dto.setId(m.getId());
-            dto.setAsset(m.getAsset());
-            dto.setId_user(m.getUser().getId());
-            dto.setStart_date(m.getStart_date());
-            dto.setEnd_date(m.getEnd_date());
-            dto.setType(m.getType());
-            dto.setDescription(m.getDescription());
-            dto.setSpare_parts(m.getSpare_parts());
-            dto.setRemarks(m.getRemarks());
-
-            if (m.getImage_1() != null) {
-                dto.setImage1Base64("data:image/jpeg;base64," + Base64.getEncoder().encodeToString(m.getImage_1()));
-            }
-            if (m.getImage_2() != null) {
-                dto.setImage2Base64("data:image/jpeg;base64," + Base64.getEncoder().encodeToString(m.getImage_2()));
-            }
-
-            return dto;
-        }).collect(Collectors.toList());
+        List<MaintenanceDTO> dtos = maintenances.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
     }
@@ -72,7 +75,7 @@ public class MaintenanceController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Maintenance> createMaintenance(
+    public ResponseEntity<?> createMaintenance(
             @RequestPart("maintenanceDTO") String jsonData,
             @RequestPart(value = "image_1", required = false) MultipartFile image1,
             @RequestPart(value = "image_2", required = false) MultipartFile image2
@@ -86,7 +89,8 @@ public class MaintenanceController {
             maintenanceDTO.setImage_2(image2.getBytes());
 
             Maintenance maintenance = maintenanceService.create(maintenanceDTO);
-            return ResponseEntity.ok(maintenance);
+            MaintenanceDTO dto = convertToDTO(maintenance);
+            return ResponseEntity.ok(dto);
         } catch (Exception e) {
             log.error("Error al crear mantenimiento", e);
             return ResponseEntity.badRequest().body(null);

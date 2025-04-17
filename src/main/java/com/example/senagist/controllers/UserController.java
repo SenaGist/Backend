@@ -39,7 +39,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody User user) {
         userService.create(user);
-        return ResponseEntity.ok(Map.of("message", "User created"));
+        return ResponseEntity.ok(Map.of("message", "User created", "data", user));
     }
 
     @PutMapping
