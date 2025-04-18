@@ -45,11 +45,11 @@ public class UserController {
     @PutMapping
     public ResponseEntity<?> update(@RequestBody UserDTO user) {
         userService.update(user);
-        return ResponseEntity.ok(Map.of("message", "User updated"));
+        return ResponseEntity.ok(Map.of("message", "User updated", "data", user));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.ok(Map.of("message", "User deleted"));
     }
