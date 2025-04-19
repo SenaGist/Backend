@@ -68,101 +68,104 @@ public class MaintenanceService {
                     .orElseThrow(() -> new EntityNotFoundException("Center not found with ID: " + centerId));
         }
 
-        Asset asset;
+        Asset asset = assetRepository.findByInventoryNumber(maintenanceNew.getAsset().getInventoryNumber())
+                .orElse(null);
+        if (asset == null) {
+            switch (maintenanceNew.getAssetType()) {
+                case "refrigeration":
+                    RefrigerationEquipment refrigeration = new RefrigerationEquipment();
+                    copyBaseAssetProperties(maintenanceNew.getAsset(), refrigeration);
+                    if (maintenanceNew.getAssetDetails() != null) {
+                        refrigeration.setCenter(center);
+                        refrigeration.setMainGroup((String) maintenanceNew.getAssetDetails().get("mainGroup"));
+                        refrigeration.setDescription((String) maintenanceNew.getAssetDetails().get("description"));
+                        refrigeration.setTechnology((String) maintenanceNew.getAssetDetails().get("technology"));
 
-        switch (maintenanceNew.getAssetType()) {
-            case "refrigeration":
-                RefrigerationEquipment refrigeration = new RefrigerationEquipment();
-                copyBaseAssetProperties(maintenanceNew.getAsset(), refrigeration);
-                if (maintenanceNew.getAssetDetails() != null) {
-                    refrigeration.setCenter(center);
-                    refrigeration.setMainGroup((String) maintenanceNew.getAssetDetails().get("mainGroup"));
-                    refrigeration.setDescription((String) maintenanceNew.getAssetDetails().get("description"));
-                    refrigeration.setTechnology((String) maintenanceNew.getAssetDetails().get("technology"));
+                        if (maintenanceNew.getAssetDetails().get("powerKW") != null) {
+                            if (maintenanceNew.getAssetDetails().get("powerKW") instanceof Number) {
+                                refrigeration.setPowerKW(((Number) maintenanceNew.getAssetDetails().get("powerKW")).doubleValue());
+                            } else if (maintenanceNew.getAssetDetails().get("powerKW") instanceof String) {
+                                try {
+                                    refrigeration.setPowerKW(Double.parseDouble((String) maintenanceNew.getAssetDetails().get("powerKW")));
+                                } catch (NumberFormatException e) {
+                                    System.out.println(e.getMessage());
+                                }
+                            }
+                        }
 
-                    if (maintenanceNew.getAssetDetails().get("powerKW") != null) {
-                        if (maintenanceNew.getAssetDetails().get("powerKW") instanceof Number) {
-                            refrigeration.setPowerKW(((Number) maintenanceNew.getAssetDetails().get("powerKW")).doubleValue());
-                        } else if (maintenanceNew.getAssetDetails().get("powerKW") instanceof String) {
-                            try {
-                                refrigeration.setPowerKW(Double.parseDouble((String) maintenanceNew.getAssetDetails().get("powerKW")));
-                            } catch (NumberFormatException e) {
-                                System.out.println(e.getMessage());
+                        refrigeration.setRefrigerantType((String) maintenanceNew.getAssetDetails().get("refrigerantType"));
+                        refrigeration.setRefrigerantCapacityKg((String) maintenanceNew.getAssetDetails().get("refrigerantCapacityKg"));
+                        refrigeration.setEnergyClassification((String) maintenanceNew.getAssetDetails().get("energyClassification"));
+                    }
+                    refrigeration.setCreated_at(LocalDateTime.now());
+                    asset = refrigerationEquipmentRepository.save(refrigeration);
+                    break;
+
+                case "lighting":
+                    LightingEquipment lighting = new LightingEquipment();
+                    copyBaseAssetProperties(maintenanceNew.getAsset(), lighting);
+                    if (maintenanceNew.getAssetDetails() != null) {
+                        lighting.setCenter(center);
+                        lighting.setTechnology((String) maintenanceNew.getAssetDetails().get("technology"));
+
+                        if (maintenanceNew.getAssetDetails().get("powerKW") != null) {
+                            if (maintenanceNew.getAssetDetails().get("powerKW") instanceof Number) {
+                                lighting.setPowerKW(((Number) maintenanceNew.getAssetDetails().get("powerKW")).doubleValue());
+                            } else if (maintenanceNew.getAssetDetails().get("powerKW") instanceof String) {
+                                try {
+                                    lighting.setPowerKW(Double.parseDouble((String) maintenanceNew.getAssetDetails().get("powerKW")));
+                                } catch (NumberFormatException e) {
+                                    System.out.println(e.getMessage());
+                                }
                             }
                         }
                     }
+                    lighting.setCreated_at(LocalDateTime.now());
+                    asset = lightingEquipmentRepository.save(lighting);
+                    break;
 
-                    refrigeration.setRefrigerantType((String) maintenanceNew.getAssetDetails().get("refrigerantType"));
-                    refrigeration.setRefrigerantCapacityKg((String) maintenanceNew.getAssetDetails().get("refrigerantCapacityKg"));
-                    refrigeration.setEnergyClassification((String) maintenanceNew.getAssetDetails().get("energyClassification"));
-                }
-                refrigeration.setCreated_at(LocalDateTime.now());
-                asset = refrigerationEquipmentRepository.save(refrigeration);
-                break;
+                case "general":
+                    GeneralEquipment general = new GeneralEquipment();
+                    copyBaseAssetProperties(maintenanceNew.getAsset(), general);
+                    if (maintenanceNew.getAssetDetails() != null) {
+                        general.setCenter(center);
+                        general.setMainGroup((String) maintenanceNew.getAssetDetails().get("mainGroup"));
+                        general.setDescription((String) maintenanceNew.getAssetDetails().get("description"));
+                        general.setEnergyClassification((String) maintenanceNew.getAssetDetails().get("energyClassification"));
 
-            case "lighting":
-                LightingEquipment lighting = new LightingEquipment();
-                copyBaseAssetProperties(maintenanceNew.getAsset(), lighting);
-                if (maintenanceNew.getAssetDetails() != null) {
-                    lighting.setCenter(center);
-                    lighting.setTechnology((String) maintenanceNew.getAssetDetails().get("technology"));
+                        if (maintenanceNew.getAssetDetails().get("dailyUsageHours") != null) {
+                            if (maintenanceNew.getAssetDetails().get("dailyUsageHours") instanceof Number) {
+                                general.setDailyUsageHours(((Number) maintenanceNew.getAssetDetails().get("dailyUsageHours")).doubleValue());
+                            } else if (maintenanceNew.getAssetDetails().get("dailyUsageHours") instanceof String) {
+                                try {
+                                    general.setDailyUsageHours(Double.parseDouble((String) maintenanceNew.getAssetDetails().get("dailyUsageHours")));
+                                } catch (NumberFormatException e) {
+                                    System.out.println(e.getMessage());
+                                }
+                            }
+                        }
 
-                    if (maintenanceNew.getAssetDetails().get("powerKW") != null) {
-                        if (maintenanceNew.getAssetDetails().get("powerKW") instanceof Number) {
-                            lighting.setPowerKW(((Number) maintenanceNew.getAssetDetails().get("powerKW")).doubleValue());
-                        } else if (maintenanceNew.getAssetDetails().get("powerKW") instanceof String) {
-                            try {
-                                lighting.setPowerKW(Double.parseDouble((String) maintenanceNew.getAssetDetails().get("powerKW")));
-                            } catch (NumberFormatException e) {
-                                System.out.println(e.getMessage());
+                        if (maintenanceNew.getAssetDetails().get("powerKW") != null) {
+                            if (maintenanceNew.getAssetDetails().get("powerKW") instanceof Number) {
+                                general.setPowerKW(((Number) maintenanceNew.getAssetDetails().get("powerKW")).doubleValue());
+                            } else if (maintenanceNew.getAssetDetails().get("powerKW") instanceof String) {
+                                try {
+                                    general.setPowerKW(Double.parseDouble((String) maintenanceNew.getAssetDetails().get("powerKW")));
+                                } catch (NumberFormatException e) {
+                                    System.out.println(e.getMessage());
+                                }
                             }
                         }
                     }
-                }
-                lighting.setCreated_at(LocalDateTime.now());
-                asset = lightingEquipmentRepository.save(lighting);
-                break;
+                    general.setCreated_at(LocalDateTime.now());
+                    asset = generalEquipmentRepository.save(general);
+                    break;
 
-            case "general":
-                GeneralEquipment general = new GeneralEquipment();
-                copyBaseAssetProperties(maintenanceNew.getAsset(), general);
-                if (maintenanceNew.getAssetDetails() != null) {
-                    general.setCenter(center);
-                    general.setMainGroup((String) maintenanceNew.getAssetDetails().get("mainGroup"));
-                    general.setDescription((String) maintenanceNew.getAssetDetails().get("description"));
-                    general.setEnergyClassification((String) maintenanceNew.getAssetDetails().get("energyClassification"));
-
-                    if (maintenanceNew.getAssetDetails().get("dailyUsageHours") != null) {
-                        if (maintenanceNew.getAssetDetails().get("dailyUsageHours") instanceof Number) {
-                            general.setDailyUsageHours(((Number) maintenanceNew.getAssetDetails().get("dailyUsageHours")).doubleValue());
-                        } else if (maintenanceNew.getAssetDetails().get("dailyUsageHours") instanceof String) {
-                            try {
-                                general.setDailyUsageHours(Double.parseDouble((String) maintenanceNew.getAssetDetails().get("dailyUsageHours")));
-                            } catch (NumberFormatException e) {
-                                System.out.println(e.getMessage());
-                            }
-                        }
-                    }
-
-                    if (maintenanceNew.getAssetDetails().get("powerKW") != null) {
-                        if (maintenanceNew.getAssetDetails().get("powerKW") instanceof Number) {
-                            general.setPowerKW(((Number) maintenanceNew.getAssetDetails().get("powerKW")).doubleValue());
-                        } else if (maintenanceNew.getAssetDetails().get("powerKW") instanceof String) {
-                            try {
-                                general.setPowerKW(Double.parseDouble((String) maintenanceNew.getAssetDetails().get("powerKW")));
-                            } catch (NumberFormatException e) {
-                                System.out.println(e.getMessage());
-                            }
-                        }
-                    }
-                }
-                general.setCreated_at(LocalDateTime.now());
-                asset = generalEquipmentRepository.save(general);
-                break;
-
-            default:
-                throw new IllegalArgumentException("Asset type not recognized");
+                default:
+                    throw new IllegalArgumentException("Asset type not recognized");
+            }
         }
+
 
         maintenance.setAsset(asset);
         maintenance.setUser(user);
@@ -181,7 +184,7 @@ public class MaintenanceService {
 
     private void copyBaseAssetProperties(Asset source, Asset target) {
         if (source != null) {
-            target.setInventory_number(source.getInventory_number());
+            target.setInventoryNumber(source.getInventoryNumber());
             target.setLocation(source.getLocation());
             target.setBrand(source.getBrand());
             target.setModel(source.getModel());

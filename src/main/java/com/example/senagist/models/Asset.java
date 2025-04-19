@@ -11,8 +11,8 @@
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-
-        private String inventory_number;
+        @Column(name = "inventory_number", unique = true)
+        private String inventoryNumber;
         private String location;
         private String brand;
         private String model;
@@ -21,8 +21,8 @@
 
         public Asset(){}
 
-        public Asset(String inventory_number, String location, String brand, String model, LocalDateTime created_at) {
-            this.inventory_number = inventory_number;
+        public Asset(String inventoryNumber, String location, String brand, String model, LocalDateTime created_at) {
+            this.inventoryNumber = inventoryNumber;
             this.location = location;
             this.brand = brand;
             this.model = model;
@@ -37,12 +37,12 @@
             this.id = id;
         }
 
-        public String getInventory_number() {
-            return inventory_number;
+        public String getInventoryNumber() {
+            return inventoryNumber;
         }
 
-        public void setInventory_number(String inventory_number) {
-            this.inventory_number = inventory_number;
+        public void setInventoryNumber(String inventoryNumber) {
+            this.inventoryNumber = inventoryNumber;
         }
 
         public String getLocation() {

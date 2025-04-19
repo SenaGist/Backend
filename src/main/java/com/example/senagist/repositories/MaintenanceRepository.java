@@ -1,8 +1,6 @@
 package com.example.senagist.repositories;
 
-import com.example.senagist.models.Asset;
 import com.example.senagist.models.Maintenance;
-import com.example.senagist.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
