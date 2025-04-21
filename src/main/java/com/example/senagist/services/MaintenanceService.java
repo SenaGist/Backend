@@ -40,6 +40,13 @@ public class MaintenanceService {
         return maintenanceRepository.findByAssetId(asset_id);
     }
 
+    public List<Maintenance> getByType(String type) {
+        return maintenanceRepository.findByType(type);
+    }
+    public List<Maintenance> getByUsername(String name) {
+        return maintenanceRepository.findByUser_Name(name);
+    }
+
     @Transactional
     public Maintenance create(MaintenanceDTO maintenanceNew) {
         Maintenance maintenance = new Maintenance();

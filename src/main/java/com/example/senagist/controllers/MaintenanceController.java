@@ -73,7 +73,16 @@ public class MaintenanceController {
         List<Maintenance> maintenances = maintenanceService.getByAsset(id);
         return ResponseEntity.ok(maintenances);
     }
-
+    @GetMapping("/asset/type/{assetType}")
+    public ResponseEntity<?> getByAssetType(@PathVariable String assetType) {
+        List<Maintenance> maintenances = maintenanceService.getByType(assetType);
+        return ResponseEntity.ok(maintenances);
+    }
+    @GetMapping("/user/name/{name}")
+    public ResponseEntity<?> getByUsername(@PathVariable String name) {
+        List<Maintenance> maintenances = maintenanceService.getByUsername(name);
+        return ResponseEntity.ok(maintenances);
+    }
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createMaintenance(
             @RequestPart("maintenanceDTO") String jsonData,
