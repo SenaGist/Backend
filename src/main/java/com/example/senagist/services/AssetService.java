@@ -58,5 +58,7 @@ public class AssetService {
         return lightingEquipmentRepository.save(lightingEquipment);
     }
 
-
+    public Asset getByInventoryNumber(String inventoryNumber) {
+        return assetRepository.findByInventoryNumber(inventoryNumber).orElse(null);
+    }
 }

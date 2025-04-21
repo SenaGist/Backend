@@ -27,6 +27,17 @@ public class AssetController {
         return ResponseEntity.ok(assetService.getById(id));
     }
 
+    @GetMapping("/inventory/{inventoryNumber}")
+    public ResponseEntity<?> getByInventoryNumber(@PathVariable String inventoryNumber){
+        var asset = assetService.getByInventoryNumber(inventoryNumber);
+        if (asset == null) {
+            return ResponseEntity
+                    .status(404)
+                    .body(Map.of("error", "Activo no encontrado"));
+        }
+        return ResponseEntity.ok(asset);
+    }
+
     @GetMapping("/general")
     public ResponseEntity<?> getAllGeneralEquipment(){
         return ResponseEntity.ok(assetService.getAllGeneralEquipment());

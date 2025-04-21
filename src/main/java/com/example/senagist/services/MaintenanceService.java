@@ -47,30 +47,29 @@ public class MaintenanceService {
         User user = userRepository.findById(maintenanceNew.getId_user())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Long centerId;
-        if (maintenanceNew.getAssetDetails() != null && maintenanceNew.getAssetDetails().get("centerId") != null) {
-            if (maintenanceNew.getAssetDetails().get("centerId") instanceof Integer) {
-                centerId = ((Integer) maintenanceNew.getAssetDetails().get("centerId")).longValue();
-            } else if (maintenanceNew.getAssetDetails().get("centerId") instanceof Long) {
-                centerId = (Long) maintenanceNew.getAssetDetails().get("centerId");
-            } else if (maintenanceNew.getAssetDetails().get("centerId") instanceof String) {
-                centerId = Long.parseLong((String) maintenanceNew.getAssetDetails().get("centerId"));
-            } else {
-                centerId = null;
-            }
-        } else {
-            centerId = null;
-        }
-
-        Center center = null;
-        if (centerId != null) {
-            center = centerRepository.findById(centerId)
-                    .orElseThrow(() -> new EntityNotFoundException("Center not found with ID: " + centerId));
-        }
-
         Asset asset = assetRepository.findByInventoryNumber(maintenanceNew.getAsset().getInventoryNumber())
                 .orElse(null);
         if (asset == null) {
+            Long centerId;
+            if (maintenanceNew.getAssetDetails() != null && maintenanceNew.getAssetDetails().get("centerId") != null) {
+                if (maintenanceNew.getAssetDetails().get("centerId") instanceof Integer) {
+                    centerId = ((Integer) maintenanceNew.getAssetDetails().get("centerId")).longValue();
+                } else if (maintenanceNew.getAssetDetails().get("centerId") instanceof Long) {
+                    centerId = (Long) maintenanceNew.getAssetDetails().get("centerId");
+                } else if (maintenanceNew.getAssetDetails().get("centerId") instanceof String) {
+                    centerId = Long.parseLong((String) maintenanceNew.getAssetDetails().get("centerId"));
+                } else {
+                    centerId = null;
+                }
+            } else {
+                centerId = null;
+            }
+
+            Center center = null;
+            if (centerId != null) {
+                center = centerRepository.findById(centerId)
+                        .orElseThrow(() -> new EntityNotFoundException("Center not found with ID: " + centerId));
+            }
             switch (maintenanceNew.getAssetType()) {
                 case "refrigeration":
                     RefrigerationEquipment refrigeration = new RefrigerationEquipment();
