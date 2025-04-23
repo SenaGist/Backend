@@ -28,6 +28,10 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public List<User> getByRole(String role){
+        return userRepository.findByRole(role);
+    }
+
     public User create(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);

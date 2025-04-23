@@ -30,6 +30,11 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/role/{role}")
+    public ResponseEntity<?> getByRole(@PathVariable String role){
+        List<User> user = userService.getByRole(role);
+        return ResponseEntity.ok(user);
+    }
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLogin userLogin) {
         User user = userService.getByEmail(userLogin.getEmail());
