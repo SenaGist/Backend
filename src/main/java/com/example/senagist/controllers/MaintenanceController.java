@@ -91,7 +91,7 @@ public class MaintenanceController {
     ) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-
+        System.out.println(image1);
         try {
             MaintenanceDTO maintenanceDTO = objectMapper.readValue(jsonData, MaintenanceDTO.class);
             maintenanceDTO.setImage_1(image1.getBytes());

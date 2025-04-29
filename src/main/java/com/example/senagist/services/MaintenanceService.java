@@ -7,7 +7,18 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -181,8 +192,25 @@ public class MaintenanceService {
         maintenance.setType(maintenanceNew.getType());
         maintenance.setSpare_parts(maintenanceNew.getSpare_parts());
         maintenance.setRemarks(maintenanceNew.getRemarks());
-        maintenance.setImage_1(maintenanceNew.getImage_1());
-        maintenance.setImage_2(maintenanceNew.getImage_2());
+        try {
+            if (maintenanceNew.getImage_1() != null && maintenanceNew.getImage_1().length > 0) {
+                byte[] compressedImage1 = compressImage(maintenanceNew.getImage_1(), 0.5f);
+                maintenance.setImage_1(compressedImage1);
+            } else {
+                System.out.println("Advertencia: image_1 es null o está vacía");
+            }
+
+            if (maintenanceNew.getImage_2() != null && maintenanceNew.getImage_2().length > 0) {
+                byte[] compressedImage2 = compressImage(maintenanceNew.getImage_2(), 0.5f);
+                maintenance.setImage_2(compressedImage2);
+            } else {
+                System.out.println("Advertencia: image_2 es null o está vacía");
+            }
+        } catch (IOException e) {
+            System.err.println("Error al comprimir imágenes: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Error al procesar las imágenes", e);
+        }
 
         return maintenanceRepository.save(maintenance);
     }
@@ -194,6 +222,59 @@ public class MaintenanceService {
             target.setLocation(source.getLocation());
             target.setBrand(source.getBrand());
             target.setModel(source.getModel());
+        }
+    }
+    public byte[] compressImage(byte[] imageBytes, float quality) throws IOException {
+        if (imageBytes == null || imageBytes.length == 0) {
+            throw new IllegalArgumentException("La imagen proporcionada es nula o está vacía");
+        }
+
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+            BufferedImage originalImage = ImageIO.read(bais);
+            if (originalImage == null) {
+                throw new IOException("No se pudo leer la imagen. Formato no soportado o datos corruptos.");
+            }
+
+            int maxDimension = 1600;
+            BufferedImage resizedImage = originalImage;
+
+            if (originalImage.getWidth() > maxDimension || originalImage.getHeight() > maxDimension) {
+                int newWidth, newHeight;
+
+                if (originalImage.getWidth() > originalImage.getHeight()) {
+                    newWidth = maxDimension;
+                    newHeight = (int) (originalImage.getHeight() * ((double) maxDimension / originalImage.getWidth()));
+                } else {
+                    newHeight = maxDimension;
+                    newWidth = (int) (originalImage.getWidth() * ((double) maxDimension / originalImage.getHeight()));
+                }
+
+                resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g = resizedImage.createGraphics();
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                g.drawImage(originalImage, 0, 0, newWidth, newHeight, null);
+                g.dispose();
+            }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next();
+
+            ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
+            jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            jpgWriteParam.setCompressionQuality(quality);
+
+            ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
+            jpgWriter.setOutput(ios);
+
+            jpgWriter.write(null, new IIOImage(resizedImage, null, null), jpgWriteParam);
+
+            ios.close();
+            jpgWriter.dispose();
+
+            return baos.toByteArray();
+        } catch (Exception e) {
+            throw new IOException("Error al comprimir la imagen: " + e.getMessage(), e);
         }
     }
 
